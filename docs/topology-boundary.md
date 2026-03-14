@@ -14,6 +14,19 @@ operator surface, or a delivery plan.
 
 Cosmocrat is the governed control-plane product around a narrow kernel.
 
+The same boundary can be read visually like this:
+
+```mermaid
+flowchart TD
+    K["Kernel core"] --> C["Governed client layer"]
+    C --> R["Reference-architectures layer"]
+    R --> X["Runtime and business-stack execution"]
+
+    K -. "durable decision and receipt evidence" .-> R
+    C -. "proof interpretation and deployment understanding" .-> R
+    R -- "does not authorize" ---x X
+```
+
 At the highest level, the product boundary can be read as four adjacent
 layers:
 
