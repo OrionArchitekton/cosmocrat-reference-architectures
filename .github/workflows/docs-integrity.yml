@@ -1,0 +1,58 @@
+name: docs-integrity
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  docs-integrity:
+    name: docs-integrity
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Diff hygiene
+        run: git diff --check
+
+      - name: Required docs present
+        run: |
+          required_paths=(
+            "README.md"
+            "docs/topology-boundary.md"
+            "docs/reference-deployment-composition.md"
+            "docs/proof-line.md"
+            "docs/linked-supporting-inputs.md"
+          )
+          for path in "${required_paths[@]}"; do
+            if [[ ! -f "$path" ]]; then
+              echo "Missing required docs file: $path" >&2
+              exit 1
+            fi
+          done
+
+      - name: Markdown lint
+        uses: DavidAnson/markdownlint-cli2-action@v20
+        with:
+          globs: |
+            README.md
+            docs/**/*.md
+
+      - name: Link integrity
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --no-progress
+            --verbose
+            README.md
+            docs/topology-boundary.md
+            docs/reference-deployment-composition.md
+            docs/proof-line.md
+            docs/linked-supporting-inputs.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
