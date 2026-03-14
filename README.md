@@ -18,6 +18,16 @@ It exists to help a reader understand:
 3. [Proof Line](./docs/proof-line.md)
 4. [Linked Supporting Inputs](./docs/linked-supporting-inputs.md)
 
+## Supporting Input Rule
+
+In this repository (see [Linked Supporting Inputs](./docs/linked-supporting-inputs.md)
+for details):
+
+- the Stage C architecture companion is treated as owned
+  reference-architecture content
+- the only Stage C artifacts that remain linked supporting inputs are the
+  demo kit, receipt pack, and replay bundle
+
 ## Boundary
 
 This is a documentation-class reference surface only.
