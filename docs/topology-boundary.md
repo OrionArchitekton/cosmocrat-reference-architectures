@@ -24,7 +24,7 @@ flowchart TD
 
     K -. "durable decision and receipt evidence" .-> R
     C -. "proof interpretation and deployment understanding" .-> R
-    R -. "does not authorize" .-> X
+    R -- "does not authorize" ---x X
 ```
 
 At the highest level, the product boundary can be read as four adjacent
