@@ -20,12 +20,13 @@ It exists to help a reader understand:
 
 ## Supporting Input Rule
 
-Within this surface:
+In this repository (see [Linked Supporting Inputs](./docs/linked-supporting-inputs.md)
+for details):
 
-- the Stage C architecture companion is already admitted into owned
-  reference-architectures content
-- the Stage C demo kit, receipt pack, and replay bundle remain linked
-  supporting inputs only
+- the Stage C architecture companion is treated as owned
+  reference-architecture content
+- the only Stage C artifacts that remain linked supporting inputs are the
+  demo kit, receipt pack, and replay bundle
 
 ## Boundary
 
