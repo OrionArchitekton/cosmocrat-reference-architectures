@@ -83,6 +83,8 @@ This page does not:
 
 ## Source
 
-- [Stage E Reference Architectures Package Map](https://github.com/OrionArchitekton/orion-estate-audit/blob/main/architecture/COSMOCRAT_STAGE_E_REFERENCE_ARCHITECTURES_PACKAGE_MAP_20260313.md)
-- [K7 Phase B Proof Freeze](https://github.com/OrionArchitekton/orion-estate-audit/blob/main/architecture/COSMOCRAT_K7_PHASE_B_PROOF_FREEZE_20260310.md)
-- [K7 Phase B Hardening Refresh Freeze](https://github.com/OrionArchitekton/orion-estate-audit/blob/main/architecture/COSMOCRAT_K7_PHASE_B_HARDENING_REFRESH_FREEZE_20260311.md)
+Merged canon inputs from `OrionArchitekton/orion-estate-audit`:
+
+- `architecture/COSMOCRAT_STAGE_E_REFERENCE_ARCHITECTURES_PACKAGE_MAP_20260313.md`
+- `architecture/COSMOCRAT_K7_PHASE_B_PROOF_FREEZE_20260310.md`
+- `architecture/COSMOCRAT_K7_PHASE_B_HARDENING_REFRESH_FREEZE_20260311.md`

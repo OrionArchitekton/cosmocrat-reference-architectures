@@ -18,7 +18,7 @@ It preserves the merged canon distinction between:
 The Stage C architecture companion is already admitted into owned
 reference-architectures content:
 
-- [Stage C Architecture Companion](https://github.com/OrionArchitekton/orion-estate-audit/blob/main/architecture/COSMOCRAT_STAGE_C_ARCHITECTURE_COMPANION_20260312.md)
+- `architecture/COSMOCRAT_STAGE_C_ARCHITECTURE_COMPANION_20260312.md`
 
 It is the explanatory companion for:
 
@@ -31,9 +31,9 @@ It is the explanatory companion for:
 The following Stage C surfaces remain linked frozen inputs and are not
 absorbed into owned reference-architectures content:
 
-- [Stage C Demo Kit](https://github.com/OrionArchitekton/orion-estate-audit/blob/main/architecture/COSMOCRAT_STAGE_C_DEMO_KIT_20260312.md)
-- [Stage C Receipt Pack](https://github.com/OrionArchitekton/orion-estate-audit/blob/main/architecture/COSMOCRAT_STAGE_C_RECEIPT_PACK_20260312.md)
-- [Stage C Replay Bundle](https://github.com/OrionArchitekton/orion-estate-audit/blob/main/architecture/COSMOCRAT_STAGE_C_REPLAY_BUNDLE_20260312.md)
+- `architecture/COSMOCRAT_STAGE_C_DEMO_KIT_20260312.md`
+- `architecture/COSMOCRAT_STAGE_C_RECEIPT_PACK_20260312.md`
+- `architecture/COSMOCRAT_STAGE_C_REPLAY_BUNDLE_20260312.md`
 
 Their roles remain distinct:
 
@@ -55,5 +55,7 @@ This page does not:
 
 ## Source
 
-- [Stage E Reference Architectures Note](https://github.com/OrionArchitekton/orion-estate-audit/blob/main/architecture/COSMOCRAT_STAGE_E_REFERENCE_ARCHITECTURES_NOTE_20260313.md)
-- [Stage E Reference Architectures Package Map](https://github.com/OrionArchitekton/orion-estate-audit/blob/main/architecture/COSMOCRAT_STAGE_E_REFERENCE_ARCHITECTURES_PACKAGE_MAP_20260313.md)
+Merged canon inputs from `OrionArchitekton/orion-estate-audit`:
+
+- `architecture/COSMOCRAT_STAGE_E_REFERENCE_ARCHITECTURES_NOTE_20260313.md`
+- `architecture/COSMOCRAT_STAGE_E_REFERENCE_ARCHITECTURES_PACKAGE_MAP_20260313.md`

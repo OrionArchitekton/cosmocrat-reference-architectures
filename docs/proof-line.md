@@ -94,7 +94,9 @@ The consistent outcome is narrow and commercial:
 
 ## Source
 
-- [K7 Phase A Proof Freeze](https://github.com/OrionArchitekton/orion-estate-audit/blob/main/architecture/COSMOCRAT_K7_PHASE_A_PROOF_FREEZE_20260310.md)
-- [K7 Phase B Proof Freeze](https://github.com/OrionArchitekton/orion-estate-audit/blob/main/architecture/COSMOCRAT_K7_PHASE_B_PROOF_FREEZE_20260310.md)
-- [K7 Phase B Hardening Refresh Freeze](https://github.com/OrionArchitekton/orion-estate-audit/blob/main/architecture/COSMOCRAT_K7_PHASE_B_HARDENING_REFRESH_FREEZE_20260311.md)
-- [Cosmocrat Client Adapter Contract v1](https://github.com/OrionArchitekton/orion-estate-audit/blob/main/COSMOCRAT_CLIENT_ADAPTER_CONTRACT_V1.md)
+Merged canon inputs from `OrionArchitekton/orion-estate-audit`:
+
+- `architecture/COSMOCRAT_K7_PHASE_A_PROOF_FREEZE_20260310.md`
+- `architecture/COSMOCRAT_K7_PHASE_B_PROOF_FREEZE_20260310.md`
+- `architecture/COSMOCRAT_K7_PHASE_B_HARDENING_REFRESH_FREEZE_20260311.md`
+- `COSMOCRAT_CLIENT_ADAPTER_CONTRACT_V1.md`

@@ -34,11 +34,10 @@ It does not authorize or contain:
 
 ## Authority
 
-This working surface is derived from merged canon on
-[`OrionArchitekton/orion-estate-audit`](https://github.com/OrionArchitekton/orion-estate-audit/tree/main),
-especially:
+This working surface is derived from merged canon on the private audit
+repo `OrionArchitekton/orion-estate-audit`, especially:
 
-- [Stage E Reference Architectures Note](https://github.com/OrionArchitekton/orion-estate-audit/blob/main/architecture/COSMOCRAT_STAGE_E_REFERENCE_ARCHITECTURES_NOTE_20260313.md)
-- [Stage E Reference Architectures Execution Brief](https://github.com/OrionArchitekton/orion-estate-audit/blob/main/architecture/COSMOCRAT_STAGE_E_REFERENCE_ARCHITECTURES_EXECUTION_BRIEF_20260313.md)
-- [Stage E Reference Architectures Package Map](https://github.com/OrionArchitekton/orion-estate-audit/blob/main/architecture/COSMOCRAT_STAGE_E_REFERENCE_ARCHITECTURES_PACKAGE_MAP_20260313.md)
-- [Stage E Reference Architectures Entrypoint](https://github.com/OrionArchitekton/orion-estate-audit/blob/main/architecture/COSMOCRAT_STAGE_E_REFERENCE_ARCHITECTURES_ENTRYPOINT_20260313.md)
+- `architecture/COSMOCRAT_STAGE_E_REFERENCE_ARCHITECTURES_NOTE_20260313.md`
+- `architecture/COSMOCRAT_STAGE_E_REFERENCE_ARCHITECTURES_EXECUTION_BRIEF_20260313.md`
+- `architecture/COSMOCRAT_STAGE_E_REFERENCE_ARCHITECTURES_PACKAGE_MAP_20260313.md`
+- `architecture/COSMOCRAT_STAGE_E_REFERENCE_ARCHITECTURES_ENTRYPOINT_20260313.md`

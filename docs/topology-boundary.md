@@ -81,6 +81,8 @@ This layer helps a reader answer:
 
 ## Source
 
-- [Stage E Reference Architectures Note](https://github.com/OrionArchitekton/orion-estate-audit/blob/main/architecture/COSMOCRAT_STAGE_E_REFERENCE_ARCHITECTURES_NOTE_20260313.md)
-- [Stage C Architecture Companion](https://github.com/OrionArchitekton/orion-estate-audit/blob/main/architecture/COSMOCRAT_STAGE_C_ARCHITECTURE_COMPANION_20260312.md)
-- [Stage E Reference Architectures Package Map](https://github.com/OrionArchitekton/orion-estate-audit/blob/main/architecture/COSMOCRAT_STAGE_E_REFERENCE_ARCHITECTURES_PACKAGE_MAP_20260313.md)
+Merged canon inputs from `OrionArchitekton/orion-estate-audit`:
+
+- `architecture/COSMOCRAT_STAGE_E_REFERENCE_ARCHITECTURES_NOTE_20260313.md`
+- `architecture/COSMOCRAT_STAGE_C_ARCHITECTURE_COMPANION_20260312.md`
+- `architecture/COSMOCRAT_STAGE_E_REFERENCE_ARCHITECTURES_PACKAGE_MAP_20260313.md`
