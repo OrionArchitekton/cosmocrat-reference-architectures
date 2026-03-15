@@ -15,8 +15,9 @@ It exists to help a reader understand:
 
 1. [Topology and Boundary](./docs/topology-boundary.md)
 2. [Reference Deployment and Composition](./docs/reference-deployment-composition.md)
-3. [Proof Line](./docs/proof-line.md)
-4. [Linked Supporting Inputs](./docs/linked-supporting-inputs.md)
+3. [Integration Composition](./docs/integration-composition.md)
+4. [Proof Line](./docs/proof-line.md)
+5. [Linked Supporting Inputs](./docs/linked-supporting-inputs.md)
 
 ## Supporting Input Rule
 
