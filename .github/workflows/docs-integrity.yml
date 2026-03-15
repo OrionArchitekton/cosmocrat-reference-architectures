@@ -26,6 +26,7 @@ jobs:
             "README.md"
             "docs/topology-boundary.md"
             "docs/reference-deployment-composition.md"
+            "docs/integration-composition.md"
             "docs/proof-line.md"
             "docs/linked-supporting-inputs.md"
           )
@@ -52,6 +53,7 @@ jobs:
             README.md
             docs/topology-boundary.md
             docs/reference-deployment-composition.md
+            docs/integration-composition.md
             docs/proof-line.md
             docs/linked-supporting-inputs.md
         env:
