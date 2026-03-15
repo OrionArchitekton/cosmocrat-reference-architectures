@@ -136,27 +136,32 @@ The reference deployment proves this sequence:
 1. **Client sends** `POST /decision` with bearer token, `idempotency_key`,
    and SDK request body.
 2. **Kernel extracts** bearer token from `Authorization` header.
-3. **Auth resolver** maps the bearer token to an `ApiCallerPrincipal`
+3. **Kernel extracts** `Idempotency-Key` from request header.
+4. **Body validation** — parses and validates the request body against the
+   Pydantic contract. A malformed body fails here with `422
+   contract_validation_failed` before any principal resolution.
+5. **Idempotency check** — verifies the `Idempotency-Key` header matches
+   `body.idempotency_key`. Mismatch returns `422 idempotency_mismatch`.
+6. **Auth resolver** — maps the bearer token to an `ApiCallerPrincipal`
    with `subject_id`, `client_id`, and scopes.
-4. **Transport gate** verifies `decision:write` scope and non-null
+7. **Transport gate** — verifies `decision:write` scope and non-null
    `client_id`.
-5. **Body validation** parses the request against the Pydantic contract.
-6. **Chronicle check** — if the `idempotency_key` was seen before with the
-   same logical request, the stored decision and receipt are replayed
-   without re-evaluation.
-7. **Policy evaluation** — deterministic rule matching against the
-   compiled policy YAML. Produces `ALLOW`, `DENY`, or `DEFER`.
-8. **Authority composition** (if configured) — validates authority
-   tokens from `context.authority_context`. Can upgrade policy `ALLOW` to
-   terminal `ALLOW`, downgrade to governed `DEFER`, or override to `DENY`
-   on semantic mismatch.
-9. **Chronicle persist** — the decision and receipt are committed to
-   Chronicle before the response is returned. The response is only sent
-   after successful persist.
-10. **Client receives** the decision response with inline receipt
-    reference. The client can query `GET /receipts/{receipt_id}` for the
-    full authoritative receipt.
-11. **Client decides** whether to execute. `ALLOW` permits execution.
+8. **Chronicle persist/replay** — if the `idempotency_key` was seen
+   before with the same logical request, the stored decision and receipt
+   are replayed without re-evaluation. Otherwise, decision evaluation
+   runs inside the persist path:
+   - **Policy evaluation** — deterministic rule matching against the
+     compiled policy YAML. Produces `ALLOW`, `DENY`, or `DEFER`.
+   - **Authority composition** (if configured) — validates authority
+     tokens from `context.authority_context`. Can make policy `ALLOW`
+     terminal, downgrade to governed `DEFER`, or override to `DENY` on
+     semantic mismatch.
+   - **Chronicle commit** — the decision and receipt are committed before
+     the response is returned.
+9. **Client receives** the decision response with inline receipt
+   reference. The client can query `GET /receipts/{receipt_id}` for the
+   full authoritative receipt.
+10. **Client decides** whether to execute. `ALLOW` permits execution.
     `DENY` and `DEFER` do not.
 
 ## Fail-Closed Posture
