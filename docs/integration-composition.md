@@ -19,8 +19,8 @@ The reference deployment baseline follows a fixed bootstrap sequence:
 1. **Chronicle database** — Postgres with the Chronicle receipt schema
    must be running and reachable before the kernel can persist decisions.
 2. **Kernel** — starts fail-closed. `/health` returns `200` immediately
-   (liveness only). `/ready` stays `false` until all runtime seams are
-   wired.
+   (liveness only). `/ready` returns non-`200` status until all runtime
+   seams are wired.
 3. **Auth resolver wiring** — the host process installs a transport auth
    resolver into `app.state.auth_resolver`. Without this, `/decision`
    returns `503 auth_resolver_unavailable`.
@@ -29,7 +29,8 @@ The reference deployment baseline follows a fixed bootstrap sequence:
    does not prevent startup but causes receipted `DEFER` responses with
    `POLICY_UNAVAILABLE`.
 5. **Governed client** — connects to the kernel only after `/ready`
-   returns `200`. Sends `POST /decision` with the SDK request contract.
+   returns HTTP `200`. Sends `POST /decision` with the SDK request
+   contract.
 
 Authority configuration (`COSMOCRAT_CORE_AUTHORITY_*` env vars) is
 optional. Missing authority does not block `/ready`. It can cause policy
@@ -43,20 +44,18 @@ governed client
     │
     ▼
 kernel (/decision, /receipts/{id})
-    │               │
-    ▼               ▼
-auth resolver    Chronicle (Postgres)
-    │
-    ▼
-policy file (YAML)
-    │
-    ▼
-authority config (optional)
+    │         │          │              │
+    ▼         ▼          ▼              ▼
+auth      Chronicle   policy file   authority config
+resolver  (Postgres)  (YAML)        (optional)
 ```
 
-The kernel is the only governed surface the client talks to. All other
-dependencies are kernel-internal. The governed client does not directly
-access Chronicle, the auth resolver, or the policy file.
+The kernel is the only governed surface the client talks to. All four
+kernel-internal dependencies are independent: the auth resolver handles
+transport identity, Chronicle persists decisions and receipts, the policy
+file drives deterministic evaluation, and authority config (when present)
+validates per-request authorization tokens. The governed client does not
+directly access any of them.
 
 ## Environment Configuration
 
@@ -134,7 +133,7 @@ The governed client must fail closed when the response is missing a
 
 The reference deployment proves this sequence:
 
-1. **Client sends** `POST /decision` with bearer token, idempotency key,
+1. **Client sends** `POST /decision` with bearer token, `idempotency_key`,
    and SDK request body.
 2. **Kernel extracts** bearer token from `Authorization` header.
 3. **Auth resolver** maps the bearer token to an `ApiCallerPrincipal`
@@ -142,7 +141,7 @@ The reference deployment proves this sequence:
 4. **Transport gate** verifies `decision:write` scope and non-null
    `client_id`.
 5. **Body validation** parses the request against the Pydantic contract.
-6. **Chronicle check** — if the idempotency key was seen before with the
+6. **Chronicle check** — if the `idempotency_key` was seen before with the
    same logical request, the stored decision and receipt are replayed
    without re-evaluation.
 7. **Policy evaluation** — deterministic rule matching against the
@@ -190,11 +189,11 @@ The seven frozen proof scenarios map to this flow:
 
 | Scenario | Decision | Receipt | Side effect |
 | --- | --- | --- | --- |
-| happy path | ALLOW | issued | executed |
-| replay no-resend | ALLOW (replayed) | same receipt | not re-executed |
-| policy deny | DENY | issued | not executed |
-| policy defer | DEFER | issued | not executed |
-| authority defer | DEFER | issued | not executed |
+| happy path | `ALLOW` | issued | executed |
+| replay no-resend | `ALLOW` (replayed) | same receipt | not re-executed |
+| policy deny | `DENY` | issued | not executed |
+| policy defer | `DEFER` | issued | not executed |
+| authority defer | `DEFER` | issued | not executed |
 | kernel unavailable | — | — | fail-closed |
 | receipt verification failure | — | — | fail-closed |
 

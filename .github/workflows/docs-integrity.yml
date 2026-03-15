@@ -50,6 +50,9 @@ jobs:
           args: >-
             --no-progress
             --verbose
+            --exclude 'github\.com/OrionArchitekton/cosmocrat-kernel'
+            --exclude 'github\.com/OrionArchitekton/cosmocrat-sdk'
+            --exclude 'github\.com/OrionArchitekton/orion-estate-audit'
             README.md
             docs/topology-boundary.md
             docs/reference-deployment-composition.md
