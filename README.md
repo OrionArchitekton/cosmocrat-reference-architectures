@@ -1,5 +1,7 @@
 # Cosmocrat Reference Architectures
 
+Agent and reviewer navigation guide: [AGENTS.md](AGENTS.md)
+
 This repository is the docs-only reference surface for Cosmocrat's
 `cosmocrat-reference-architectures` lane.
 
