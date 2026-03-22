@@ -12,6 +12,21 @@ validation into a single readable flow.
 It is explanatory only. It does not provide deployment instructions,
 executable scripts, or runtime authority.
 
+## Naming Rule
+
+This page uses the following evidence terms deliberately:
+
+- **Chronicle receipt-of-record** refers to the authoritative receipt in
+  Chronicle in the kernel. In the `POST /decision` response, the inline
+  `receipt` object is a Chronicle receipt-of-record reference only. The
+  authoritative receipt is resolved through `GET /receipts/{id}`.
+- **Runtime wrapper receipt** refers to any runtime-local operational
+  wrapper evidence outside this reference deployment contract.
+- **Run metadata, traces, and logs** refers to execution diagnostics only.
+
+Only the Chronicle receipt-of-record clears the governed proof line on
+this page.
+
 ## Boot Order
 
 The reference deployment baseline follows a fixed bootstrap sequence:
@@ -26,8 +41,8 @@ The reference deployment baseline follows a fixed bootstrap sequence:
    returns `503 auth_resolver_unavailable`.
 4. **Policy file** — the kernel reads a compiled policy YAML from the
    path in `COSMOCRAT_CORE_POLICY_PATH`. A missing or unreadable policy
-   does not prevent startup but causes receipted `DEFER` responses with
-   `POLICY_UNAVAILABLE`.
+   does not prevent startup but causes `DEFER` responses with Chronicle
+   receipt-of-record evidence and `POLICY_UNAVAILABLE`.
 5. **Governed client** — connects to the kernel only after `/ready`
    returns HTTP `200`. Sends `POST /decision` with the SDK request
    contract.
@@ -56,6 +71,10 @@ transport identity, Chronicle persists decisions and receipts, the policy
 file drives deterministic evaluation, and authority config (when present)
 validates per-request authorization tokens. The governed client does not
 directly access any of them.
+
+The runtime is not part of this authoritative receipt chain. If runtime
+wrapper evidence exists around this flow, it is operational only and does
+not replace the Chronicle receipt-of-record.
 
 ## Environment Configuration
 
@@ -129,6 +148,9 @@ contract defined in
 The governed client must fail closed when the response is missing a
 `decision` field or a durable `receipt.query_ref`.
 
+In this contract, the inline `receipt` object is a Chronicle
+receipt-of-record reference, not a runtime wrapper receipt.
+
 ## Governed Decision Flow
 
 The reference deployment proves this sequence:
@@ -156,11 +178,11 @@ The reference deployment proves this sequence:
      tokens from `context.authority_context`. Can make policy `ALLOW`
      terminal, downgrade to governed `DEFER`, or override to `DENY` on
      semantic mismatch.
-   - **Chronicle commit** — the decision and receipt are committed before
-     the response is returned.
-9. **Client receives** the decision response with inline receipt
-   reference. The client can query `GET /receipts/{receipt_id}` for the
-   full authoritative receipt.
+   - **Chronicle commit** — the decision and Chronicle receipt-of-record
+     are committed before the response is returned.
+9. **Client receives** the decision response with inline Chronicle
+   receipt-of-record reference. The client can query
+   `GET /receipts/{id}` for the full authoritative receipt.
 10. **Client decides** whether to execute. `ALLOW` permits execution.
     `DENY` and `DEFER` do not.
 
@@ -174,9 +196,9 @@ layer:
 - **Invalid bearer token** → `401 authentication_invalid`
 - **Missing scope or client** → `403 access_denied`
 - **Bad request body** → `422 contract_validation_failed`
-- **No matching policy rule** → receipted `DENY`
-- **Unavailable policy file** → receipted `DEFER` with
-  `POLICY_UNAVAILABLE`
+- **No matching policy rule** → `DENY` with Chronicle receipt-of-record
+- **Unavailable policy file** → `DEFER` with Chronicle receipt-of-record
+  and `POLICY_UNAVAILABLE`
 - **Authority semantic mismatch** → `DENY`
 - **Missing authority config** → governed `DEFER` (for policy `ALLOW`
   results that need authority)

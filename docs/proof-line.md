@@ -37,11 +37,26 @@ Chronicle receipt evidence:
 Within the proof freezes, the only governed proof surfaces used are:
 
 - `POST /decision`
-- `GET /receipts/{receipt_id}`
+- `GET /receipts/{id}`
 
 This is why the proof line is about governed decisioning, durable receipt
 evidence, replay safety, and fail-closed behavior rather than generic
 workflow execution.
+
+## Evidence Taxonomy
+
+For this reference surface, use the same evidence taxonomy defined in
+[integration-composition.md](./integration-composition.md#naming-rule):
+
+- **Chronicle receipt-of-record** is the only proof-line authority
+  surface.
+- **Runtime wrapper receipt** is operational evidence only.
+- **Run metadata, traces, and logs** are operational diagnostics only.
+  They can support investigation, but they do not clear governance proof
+  requirements by themselves.
+
+This repo explains the Chronicle proof line only. It does not treat
+runtime wrapper evidence as a substitute for receipt-of-record truth.
 
 ## What Each Frozen Phase Proves
 
