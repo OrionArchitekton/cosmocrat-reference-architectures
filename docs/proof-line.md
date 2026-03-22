@@ -43,6 +43,23 @@ This is why the proof line is about governed decisioning, durable receipt
 evidence, replay safety, and fail-closed behavior rather than generic
 workflow execution.
 
+## Evidence Taxonomy
+
+For this reference surface, the evidence names stay strict:
+
+- **Chronicle receipt-of-record** means the authoritative governed
+  receipt persisted by kernel/Chronicle and resolved through
+  `GET /receipts/{receipt_id}`.
+- **Runtime wrapper receipt** means runtime-local operational evidence
+  emitted around admitted wrapper hooks only. It is not the proof-line
+  authority surface.
+- **Run metadata, traces, and logs** are operational diagnostics only.
+  They can support investigation, but they do not clear governance proof
+  requirements by themselves.
+
+This repo explains the Chronicle proof line only. It does not treat
+runtime wrapper evidence as a substitute for receipt-of-record truth.
+
 ## What Each Frozen Phase Proves
 
 ### Phase A
