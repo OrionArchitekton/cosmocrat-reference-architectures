@@ -17,11 +17,12 @@ executable scripts, or runtime authority.
 This page uses the following evidence terms deliberately:
 
 - **Chronicle receipt-of-record** refers to the authoritative receipt in
-  the kernel response contract and the durable receipt returned through
-  `GET /receipts/{receipt_id}`.
+  Chronicle in the kernel. In the `POST /decision` response, the inline
+  `receipt` object is a Chronicle receipt-of-record reference only. The
+  authoritative receipt is resolved through `GET /receipts/{id}`.
 - **Runtime wrapper receipt** refers to any runtime-local operational
   wrapper evidence outside this reference deployment contract.
-- **Run metadata / trace / logs** refers to execution diagnostics only.
+- **Run metadata, traces, and logs** refers to execution diagnostics only.
 
 Only the Chronicle receipt-of-record clears the governed proof line on
 this page.
@@ -181,7 +182,7 @@ The reference deployment proves this sequence:
      are committed before the response is returned.
 9. **Client receives** the decision response with inline Chronicle
    receipt-of-record reference. The client can query
-   `GET /receipts/{receipt_id}` for the full authoritative receipt.
+   `GET /receipts/{id}` for the full authoritative receipt.
 10. **Client decides** whether to execute. `ALLOW` permits execution.
     `DENY` and `DEFER` do not.
 
@@ -196,8 +197,8 @@ layer:
 - **Missing scope or client** → `403 access_denied`
 - **Bad request body** → `422 contract_validation_failed`
 - **No matching policy rule** → `DENY` with Chronicle receipt-of-record
-- **Unavailable policy file** → `DEFER` with Chronicle receipt-of-record and
-  `POLICY_UNAVAILABLE`
+- **Unavailable policy file** → `DEFER` with Chronicle receipt-of-record
+  and `POLICY_UNAVAILABLE`
 - **Authority semantic mismatch** → `DENY`
 - **Missing authority config** → governed `DEFER` (for policy `ALLOW`
   results that need authority)
