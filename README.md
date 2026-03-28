@@ -8,7 +8,7 @@ This repository is the docs-only reference surface for Cosmocrat's
 It exists to help a reader understand:
 
 - the product boundary around the Cosmocrat kernel
-- the reference deployment and composition shape
+- the current default deploy/reference composition reading path
 - the proof line from governed decision to durable receipt evidence
 - the linked Stage C supporting inputs that remain outside owned
   reference-architectures content
@@ -17,6 +17,8 @@ It exists to help a reader understand:
 
 1. [Topology and Boundary](./docs/topology-boundary.md)
 2. [Reference Deployment and Composition](./docs/reference-deployment-composition.md)
+   - start here for the current deploy/reference explanation, then follow
+     the named `orion-infra` operational sources from that page
 3. [Integration Composition](./docs/integration-composition.md)
 4. [Proof Line](./docs/proof-line.md)
 5. [Linked Supporting Inputs](./docs/linked-supporting-inputs.md)
@@ -34,6 +36,9 @@ for details):
 ## Boundary
 
 This is a documentation-class reference surface only.
+
+It explains the current composition shape, but the actual operational
+composition root still lives in `orion-infra`.
 
 It does not authorize or contain:
 

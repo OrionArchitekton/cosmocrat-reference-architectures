@@ -12,6 +12,11 @@ validation into a single readable flow.
 It is explanatory only. It does not provide deployment instructions,
 executable scripts, or runtime authority.
 
+For the current deploy/reference explanation and operational-home
+reading path, start with
+[Reference Deployment and Composition](./reference-deployment-composition.md).
+This page is about governed seam behavior, not deploy-home ownership.
+
 ## Naming Rule
 
 This page uses the following evidence terms deliberately:

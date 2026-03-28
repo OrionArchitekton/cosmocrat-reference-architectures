@@ -5,86 +5,137 @@
 ## Purpose
 
 This page explains the current reference deployment and composition shape
-for the Cosmocrat proof posture.
+for the Cosmocrat estate.
 
 It is explanatory only. It does not serve as operational runtime
 authority and it does not provide deployment instructions.
 
-## Current Explanatory Baseline
+## Current Reader Rule
 
-The current clean reference baseline is the refreshed Azure VM proof
-posture canonized in the K7 Phase B hardening refresh freeze.
+Read this page when you need the current answer to:
 
-That baseline is useful here because it shows:
+- where the deploy/reference composition story lives now
+- which repo owns the actual operational stack
+- how kernel, runtime, infra, and a business lane relate in the current
+  canon
+- what is executable now versus still local, bootstrap, or later-stage
+  work
 
-- a deployable container proof posture exists
-- the proof path is configuration-driven
-- the hardened staged proof remains inside the governed boundary
+If you need the actual operational/package surfaces, the current home is
+`orion-infra`, not this repository.
 
-Azure VM is the explanatory reference baseline in this surface. It is not
-a durable-home decision or a runtime placement directive.
+## Current Composition Roles
 
-## Composition Layers
+The current reference composition story is easiest to read as four
+named roles:
 
-The reference deployment/composition story is easiest to read as four
-layers:
+- **Governance plane**
+  - current repo home: `cosmocrat-kernel`
+  - current posture: admitted service in shared stack
+- **Thin execution substrate**
+  - current repo home: `orion-runtime`
+  - current posture: boundary-only; not infra rollout
+- **Shared deployment and ops root**
+  - current repo home: `orion-infra`
+  - current posture: ops root for stores + kernel
+- **Business lane consumer position**
+  - current repo home: lane-owned business repo
+  - current posture: unbound consumer
 
-1. **Governed boundary**
-   - the kernel exposes the governed proof surfaces
-   - the governed client interacts with the kernel through the fixed
-     contract boundary
-2. **Staged proof stack**
-   - `kernel-postgres`
-   - `kernel`
-   - `auxo-postgres`
-   - `mailpit`
-   - `auxo-tech`
-   - `proof-runner`
-3. **Deployment posture**
-   - built images only
-   - internal-only network posture
-   - fixed bootstrap order
-   - exact receipt verification before side effects
-4. **Reference explanation layer**
-   - packaging descriptors
-   - topology explanation
-   - proof interpretation
-   - linked supporting inputs
+This page explains that shape. It does not make any of those repos
+change ownership.
 
-These layers are presented so a reader can understand the shape of the
-reference posture without treating this repository as an operational
-surface.
+## Current Operator Reading Path
 
-## Reference Environment Patterns
+The current low-risk reading path is:
 
-Merged canon currently supports three environment readings:
+1. start here for the explanatory composition view
+2. then read `orion-infra/README.md` for the shared deploy/ops boundary
+3. then read `orion-infra/docs/CANONICAL_EXECUTABLE_COMPOSITION.md`
+4. then inspect
+   `orion-infra/deploy/cosmocrat/compose/canonical-stack.compose.yml`
 
-- **Phase A local proof**
-  - establishes the first bounded container proof baseline
-- **Phase B Azure staging proof**
-  - shows the same governed path on a clean staged VM
-- **Phase B hardening refresh**
-  - strengthens the staged proof baseline with hardened image, config,
-    and restart posture
+Those are the current operational/package sources. This repository
+remains the explanation layer only.
 
-For this repository, the active reference posture is the hardened Azure
-baseline because it is the clearest current explanatory surface for
-deployment and proof understanding.
+## Current Executable Posture
+
+The current canonical executable composition root lives in
+`orion-infra/deploy/cosmocrat/compose/canonical-stack.compose.yml`.
+
+That stack currently renders:
+
+- shared stores from the infra-owned bootstrap slice
+  - Postgres
+  - Redis
+  - MinIO
+  - ClickHouse
+- one `cosmocrat-kernel` service bound through the existing kernel
+  container contract
+
+The same compose root explicitly keeps two other positions unbound:
+
+- `orion-runtime` remains a `contract_slot_only`
+- the lane position remains `not_yet_bound`
+
+This is the key current-state point: the shared stack is real, but it is
+not yet a runtime-plus-lane deployment surface.
+
+## Local Bootstrap Versus Later Staged Deployment
+
+Current canon separates three readings:
+
+- **Executable now in the shared stack**
+  - infra-owned shared stores
+  - one kernel service
+- **Local or bootstrap consumer posture now**
+  - runtime adoption remains thin and caller-supplied
+  - lane behavior remains lane-owned and may be proven or run in its own
+    bounded surface
+- **Later staged deployment expectation**
+  - runtime or lane participation may be admitted later, but only after
+    canon explicitly binds them into an operational home
+
+This page should therefore be read as:
+
+- current operator explanation now
+- explicit slot posture now
+- future staged admission later
+
+It should not be read as evidence that runtime or a lane already deploys
+through `orion-infra` by default.
+
+## Business Lane Role
+
+The March 27 audit controller requires this artifact to name one
+business-lane role. The current role is:
+
+- a lane-owned consumer position that receives or produces business
+  workflow truth outside shared infra layers
+
+The current compose root names a lane slot and leaves it unbound. That is
+the correct current explanation. A business lane still exists in the
+topology, but it is not admitted here as a default executable consumer in
+this pass.
 
 ## What This Page Does Not Do
 
 This page does not:
 
-- provide Docker Compose files
-- provide Kubernetes manifests
-- tell an operator how to run or recover the stack
+- provide Docker Compose files or Kubernetes manifests
+- tell an operator how to run, recover, or promote the stack
 - grant authority over runtime placement
-- move any deployment assets out of audit canon
+- bind a runtime or lane into the current shared stack by implication
+- move any deployment assets out of `orion-infra`
 
 ## Source
 
-Merged canon inputs from `OrionArchitekton/orion-estate-audit`:
+Current explanatory canon for this page is grounded in:
 
-- `architecture/COSMOCRAT_STAGE_E_REFERENCE_ARCHITECTURES_PACKAGE_MAP_20260313.md`
-- `architecture/COSMOCRAT_K7_PHASE_B_PROOF_FREEZE_20260310.md`
-- `architecture/COSMOCRAT_K7_PHASE_B_HARDENING_REFRESH_FREEZE_20260311.md`
+- the March 27 estate action plan `P05`
+- `orion-infra/README.md`
+- `orion-infra/docs/CANONICAL_EXECUTABLE_COMPOSITION.md`
+- `orion-infra/deploy/cosmocrat/compose/canonical-stack.compose.yml`
+
+Those sources define the current deploy/reference explanation without
+turning this repository into an operational deployment home.
