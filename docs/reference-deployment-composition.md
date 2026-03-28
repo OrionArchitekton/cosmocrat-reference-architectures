@@ -29,12 +29,37 @@ If you need the actual operational/package surfaces, the current home is
 The current reference composition story is easiest to read as four
 named roles:
 
-| Role | Current repo home | Current posture |
-| --- | --- | --- |
-| Governance plane | `cosmocrat-kernel` | Admitted service in shared stack |
-| Thin execution substrate | `orion-runtime` | Boundary-only surface; not infra rollout |
-| Shared deployment and ops root | `orion-infra` | Ops root for shared stores + kernel |
-| Business lane consumer position | lane-owned business repo | Consumer role; not default bound container |
+<table>
+  <thead>
+    <tr>
+      <th>Role</th>
+      <th>Current repo home</th>
+      <th>Current posture</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Governance plane</td>
+      <td><code>cosmocrat-kernel</code></td>
+      <td>Admitted service in shared stack</td>
+    </tr>
+    <tr>
+      <td>Thin execution substrate</td>
+      <td><code>orion-runtime</code></td>
+      <td>Boundary-only; not infra rollout</td>
+    </tr>
+    <tr>
+      <td>Shared deployment and ops root</td>
+      <td><code>orion-infra</code></td>
+      <td>Ops root for stores + kernel</td>
+    </tr>
+    <tr>
+      <td>Business lane consumer position</td>
+      <td>lane-owned business repo</td>
+      <td>Unbound consumer</td>
+    </tr>
+  </tbody>
+</table>
 
 This page explains that shape. It does not make any of those repos
 change ownership.
