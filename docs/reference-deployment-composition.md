@@ -31,10 +31,10 @@ named roles:
 
 | Role | Current repo home | Current posture |
 | --- | --- | --- |
-| Governance plane | `cosmocrat-kernel` | Admitted executable service in the current shared stack |
-| Thin execution substrate | `orion-runtime` | Boundary-only runtime surface; not admitted as an infra-owned rollout here |
-| Shared deployment and ops root | `orion-infra` | Current operational composition root for shared stores and kernel |
-| Business lane consumer position | lane-owned business repo | Explicit consumer role, but not a default bound container in the current shared stack |
+| Governance plane | `cosmocrat-kernel` | Admitted service in shared stack |
+| Thin execution substrate | `orion-runtime` | Boundary-only surface; not infra rollout |
+| Shared deployment and ops root | `orion-infra` | Ops root for shared stores + kernel |
+| Business lane consumer position | lane-owned business repo | Consumer role; not default bound container |
 
 This page explains that shape. It does not make any of those repos
 change ownership.
