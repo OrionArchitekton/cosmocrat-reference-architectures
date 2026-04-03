@@ -39,13 +39,7 @@ def next_link(link_header: str) -> str | None:
     return None
 
 
-def fetch_paginated_items(
-    url: str,
-    token: str,
-    item_key: str | None = None,
-    stop_on_key: str | None = None,
-    stop_on_values: set[str] | None = None,
-) -> list[dict]:
+def fetch_paginated_items(url: str, token: str, item_key: str | None = None) -> list[dict]:
     items: list[dict] = []
     next_url: str | None = url
 
@@ -59,14 +53,6 @@ def fetch_paginated_items(
             if not isinstance(payload, dict):
                 raise ValueError("expected paginated object payload")
             items.extend(payload.get(item_key, []))
-        if stop_on_key and stop_on_values:
-            seen_values = {
-                item.get(stop_on_key)
-                for item in items
-                if isinstance(item, dict) and item.get(stop_on_key) in stop_on_values
-            }
-            if seen_values >= stop_on_values:
-                break
         next_url = next_link(link_header)
 
     return items
@@ -158,20 +144,8 @@ def main() -> int:
 
     for attempt in range(1, args.max_attempts + 1):
         try:
-            required_names = set(required)
-            check_runs = fetch_paginated_items(
-                check_runs_url,
-                token,
-                "check_runs",
-                stop_on_key="name",
-                stop_on_values=required_names,
-            )
-            statuses = fetch_paginated_items(
-                statuses_url,
-                token,
-                stop_on_key="context",
-                stop_on_values=required_names,
-            )
+            check_runs = fetch_paginated_items(check_runs_url, token, "check_runs")
+            statuses = fetch_paginated_items(statuses_url, token)
         except urllib.error.HTTPError as exc:
             body = get_http_error_body(exc)
             if is_retryable_http_error(exc, body) and attempt < args.max_attempts:
