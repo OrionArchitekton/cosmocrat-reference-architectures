@@ -10,7 +10,7 @@ import urllib.parse
 import urllib.request
 
 
-PASSING_CHECK_RUN_CONCLUSIONS = {"SUCCESS", "SKIPPED", "NEUTRAL"}
+PASSING_CHECK_RUN_CONCLUSIONS = {"SUCCESS", "SKIPPED"}
 PENDING_STATES = {"PENDING", "EXPECTED", "MISSING"}
 
 
@@ -58,7 +58,14 @@ def fetch_paginated_items(url: str, token: str, item_key: str | None = None) -> 
     return items
 
 
-def is_retryable_http_error(exc: urllib.error.HTTPError) -> bool:
+def get_http_error_body(exc: urllib.error.HTTPError) -> str:
+    try:
+        return exc.read().decode("utf-8", errors="ignore")
+    except Exception:
+        return ""
+
+
+def is_retryable_http_error(exc: urllib.error.HTTPError, body: str) -> bool:
     if exc.code == 429 or exc.code >= 500:
         return True
     if exc.code != 403:
@@ -67,10 +74,6 @@ def is_retryable_http_error(exc: urllib.error.HTTPError) -> bool:
         return True
     if exc.headers.get("X-RateLimit-Remaining") == "0":
         return True
-    try:
-        body = exc.read().decode("utf-8", errors="ignore")
-    except Exception:
-        body = ""
     lowered = body.lower()
     return "rate limit" in lowered or "secondary rate limit" in lowered
 
@@ -144,20 +147,29 @@ def main() -> int:
             check_runs = fetch_paginated_items(check_runs_url, token, "check_runs")
             statuses = fetch_paginated_items(statuses_url, token)
         except urllib.error.HTTPError as exc:
-            if is_retryable_http_error(exc) and attempt < args.max_attempts:
+            body = get_http_error_body(exc)
+            if is_retryable_http_error(exc, body) and attempt < args.max_attempts:
                 retry_after = exc.headers.get("Retry-After")
                 wait_seconds = int(retry_after) if retry_after and retry_after.isdigit() else args.sleep_seconds
                 print(f"GitHub API transient error on attempt {attempt}: {exc}", file=sys.stderr)
                 time.sleep(wait_seconds)
                 continue
-            print(f"GitHub API request failed: {exc}", file=sys.stderr)
+            detail = f"{exc}: {body}" if body else str(exc)
+            print(f"GitHub API request failed: {detail}", file=sys.stderr)
             return 1
-        except (urllib.error.URLError, json.JSONDecodeError, TimeoutError, ValueError) as exc:
+        except (urllib.error.URLError, TimeoutError) as exc:
             if attempt < args.max_attempts:
-                print(f"GitHub API transient failure on attempt {attempt}: {exc}", file=sys.stderr)
+                print(f"GitHub API transient network failure on attempt {attempt}: {exc}", file=sys.stderr)
                 time.sleep(args.sleep_seconds)
                 continue
-            print(f"GitHub API request failed: {exc}", file=sys.stderr)
+            print(f"GitHub API network request failed after {attempt} attempts: {exc}", file=sys.stderr)
+            return 1
+        except (json.JSONDecodeError, ValueError) as exc:
+            print(
+                "GitHub API response parsing failed (likely permanent error, not retrying): "
+                f"{exc}",
+                file=sys.stderr,
+            )
             return 1
 
         pending = False
