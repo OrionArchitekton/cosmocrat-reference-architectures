@@ -118,20 +118,6 @@ def check_state(name: str, check_runs: list[dict], statuses: list[dict]) -> str:
     return "MISSING"
 
 
-def check_state_with_fallback(
-    name: str,
-    primary_check_runs: list[dict],
-    primary_statuses: list[dict],
-    fallback_check_runs: list[dict],
-    fallback_statuses: list[dict],
-    fallback_enabled: bool,
-) -> str:
-    primary_state = check_state(name, primary_check_runs, primary_statuses)
-    if primary_state != "MISSING" or not fallback_enabled:
-        return primary_state
-    return check_state(name, fallback_check_runs, fallback_statuses)
-
-
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo", required=True)
@@ -152,10 +138,10 @@ def main() -> int:
         print("required checks list must not be empty", file=sys.stderr)
         return 1
     if args.max_attempts <= 0:
-        print("MAX_ATTEMPTS must be a positive integer", file=sys.stderr)
+        print("--max-attempts must be a positive integer", file=sys.stderr)
         return 1
     if args.sleep_seconds <= 0:
-        print("SLEEP_SECONDS must be a positive integer", file=sys.stderr)
+        print("--sleep-seconds must be a positive integer", file=sys.stderr)
         return 1
 
     repo = urllib.parse.quote(args.repo, safe="/")
@@ -186,14 +172,18 @@ def main() -> int:
         try:
             primary_check_runs = fetch_paginated_items(primary_check_runs_url, token, "check_runs")
             primary_statuses = fetch_paginated_items(primary_statuses_url, token)
-            fallback_check_runs = (
-                fetch_paginated_items(fallback_check_runs_url, token, "check_runs")
-                if fallback_enabled
-                else []
+            primary_states = {
+                name: check_state(name, primary_check_runs, primary_statuses) for name in required
+            }
+            needs_fallback = fallback_enabled and any(
+                state == "MISSING" for state in primary_states.values()
             )
-            fallback_statuses = (
-                fetch_paginated_items(fallback_statuses_url, token) if fallback_enabled else []
-            )
+            if needs_fallback:
+                fallback_check_runs = fetch_paginated_items(fallback_check_runs_url, token, "check_runs")
+                fallback_statuses = fetch_paginated_items(fallback_statuses_url, token)
+            else:
+                fallback_check_runs = []
+                fallback_statuses = []
         except urllib.error.HTTPError as exc:
             body = get_http_error_body(exc)
             if is_retryable_http_error(exc, body) and attempt < args.max_attempts:
@@ -223,14 +213,9 @@ def main() -> int:
         pending = False
         has_failure = False
         for name in required:
-            state = check_state_with_fallback(
-                name,
-                primary_check_runs,
-                primary_statuses,
-                fallback_check_runs,
-                fallback_statuses,
-                fallback_enabled,
-            )
+            state = primary_states[name]
+            if state == "MISSING" and needs_fallback:
+                state = check_state(name, fallback_check_runs, fallback_statuses)
             if state == "SUCCESS":
                 last_non_success_by_check.pop(name, None)
                 print(f"check '{name}' OK ({state})")

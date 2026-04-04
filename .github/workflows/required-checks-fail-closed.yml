@@ -19,7 +19,7 @@ jobs:
       REQUIRED_CHECKS: "docs-integrity,gitleaks"
       GH_TOKEN: ${{ github.token }}
       REPO: ${{ github.repository }}
-      MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+      MERGE_SHA: ${{ github.sha }}
       HEAD_SHA: ${{ github.event.pull_request.head.sha }}
       MAX_ATTEMPTS: "40"
       SLEEP_SECONDS: "15"
