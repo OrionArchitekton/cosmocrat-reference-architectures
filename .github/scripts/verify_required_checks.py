@@ -10,7 +10,7 @@ import urllib.parse
 import urllib.request
 
 
-PASSING_CHECK_RUN_CONCLUSIONS = {"SUCCESS", "SKIPPED"}
+PASSING_CHECK_RUN_CONCLUSIONS = {"SUCCESS", "NEUTRAL", "SKIPPED"}
 PENDING_STATES = {"PENDING", "EXPECTED", "MISSING"}
 
 
@@ -118,9 +118,24 @@ def check_state(name: str, check_runs: list[dict], statuses: list[dict]) -> str:
     return "MISSING"
 
 
+def check_state_with_fallback(
+    name: str,
+    primary_check_runs: list[dict],
+    primary_statuses: list[dict],
+    fallback_check_runs: list[dict],
+    fallback_statuses: list[dict],
+    fallback_enabled: bool,
+) -> str:
+    primary_state = check_state(name, primary_check_runs, primary_statuses)
+    if primary_state != "MISSING" or not fallback_enabled:
+        return primary_state
+    return check_state(name, fallback_check_runs, fallback_statuses)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo", required=True)
+    parser.add_argument("--merge-sha")
     parser.add_argument("--head-sha", required=True)
     parser.add_argument("--required-checks", required=True)
     parser.add_argument("--max-attempts", type=int, default=40)
@@ -136,16 +151,49 @@ def main() -> int:
     if not required:
         print("required checks list must not be empty", file=sys.stderr)
         return 1
+    if args.max_attempts <= 0:
+        print("MAX_ATTEMPTS must be a positive integer", file=sys.stderr)
+        return 1
+    if args.sleep_seconds <= 0:
+        print("SLEEP_SECONDS must be a positive integer", file=sys.stderr)
+        return 1
 
     repo = urllib.parse.quote(args.repo, safe="/")
-    sha = urllib.parse.quote(args.head_sha, safe="")
-    check_runs_url = f"https://api.github.com/repos/{repo}/commits/{sha}/check-runs?per_page=100"
-    statuses_url = f"https://api.github.com/repos/{repo}/commits/{sha}/statuses?per_page=100"
+    primary_sha = args.merge_sha or args.head_sha
+    fallback_sha = args.head_sha if args.head_sha != primary_sha else None
+    if not primary_sha:
+        print("unable to determine a commit SHA to evaluate", file=sys.stderr)
+        return 1
+
+    def commit_urls(ref: str) -> tuple[str, str]:
+        sha = urllib.parse.quote(ref, safe="")
+        return (
+            f"https://api.github.com/repos/{repo}/commits/{sha}/check-runs?per_page=100",
+            f"https://api.github.com/repos/{repo}/commits/{sha}/statuses?per_page=100",
+        )
+
+    primary_check_runs_url, primary_statuses_url = commit_urls(primary_sha)
+    fallback_enabled = fallback_sha is not None
+    if fallback_enabled:
+        fallback_check_runs_url, fallback_statuses_url = commit_urls(fallback_sha)
+    else:
+        fallback_check_runs_url = ""
+        fallback_statuses_url = ""
+
+    last_non_success_by_check: dict[str, str] = {}
 
     for attempt in range(1, args.max_attempts + 1):
         try:
-            check_runs = fetch_paginated_items(check_runs_url, token, "check_runs")
-            statuses = fetch_paginated_items(statuses_url, token)
+            primary_check_runs = fetch_paginated_items(primary_check_runs_url, token, "check_runs")
+            primary_statuses = fetch_paginated_items(primary_statuses_url, token)
+            fallback_check_runs = (
+                fetch_paginated_items(fallback_check_runs_url, token, "check_runs")
+                if fallback_enabled
+                else []
+            )
+            fallback_statuses = (
+                fetch_paginated_items(fallback_statuses_url, token) if fallback_enabled else []
+            )
         except urllib.error.HTTPError as exc:
             body = get_http_error_body(exc)
             if is_retryable_http_error(exc, body) and attempt < args.max_attempts:
@@ -173,23 +221,56 @@ def main() -> int:
             return 1
 
         pending = False
+        has_failure = False
         for name in required:
-            state = check_state(name, check_runs, statuses)
+            state = check_state_with_fallback(
+                name,
+                primary_check_runs,
+                primary_statuses,
+                fallback_check_runs,
+                fallback_statuses,
+                fallback_enabled,
+            )
             if state == "SUCCESS":
+                last_non_success_by_check.pop(name, None)
                 print(f"check '{name}' OK ({state})")
                 continue
             if state in PENDING_STATES:
+                last_non_success_by_check[name] = state
                 print(f"check '{name}' not ready yet ({state})")
                 pending = True
                 continue
-            print(f"required check '{name}' not successful: {state}", file=sys.stderr)
-            return 1
+            previous_state = last_non_success_by_check.get(name)
+            last_non_success_by_check[name] = state
+            if previous_state != state:
+                print(f"check '{name}' currently failing ({state})", file=sys.stderr)
+            else:
+                print(f"check '{name}' still failing ({state})")
+            has_failure = True
 
         if not pending:
-            return 0
+            if not has_failure:
+                return 0
+            print(
+                "non-success terminal states observed; waiting for reruns until timeout "
+                f"(attempt {attempt}/{args.max_attempts})"
+            )
 
         if attempt == args.max_attempts:
-            print("required checks did not reach a successful terminal state in time", file=sys.stderr)
+            details = "; ".join(
+                f"{name}: {state}" for name, state in last_non_success_by_check.items()
+            )
+            if details:
+                print(
+                    "required checks did not reach a successful terminal state in time "
+                    f"({details})",
+                    file=sys.stderr,
+                )
+            else:
+                print(
+                    "required checks did not reach a successful terminal state in time",
+                    file=sys.stderr,
+                )
             return 1
 
         time.sleep(args.sleep_seconds)
