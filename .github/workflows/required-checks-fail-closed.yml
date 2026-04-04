@@ -19,9 +19,13 @@ jobs:
       REQUIRED_CHECKS: "docs-integrity,gitleaks"
       GH_TOKEN: ${{ github.token }}
       REPO: ${{ github.repository }}
+      MERGE_SHA: ${{ github.sha }}
       HEAD_SHA: ${{ github.event.pull_request.head.sha }}
       MAX_ATTEMPTS: "40"
       SLEEP_SECONDS: "15"
+      # Total sleep time is approximately (MAX_ATTEMPTS - 1) * SLEEP_SECONDS,
+      # plus API and processing overhead, because the script sleeps only
+      # between attempts.
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
@@ -35,6 +39,7 @@ jobs:
         run: |
           python3 .github/scripts/verify_required_checks.py \
             --repo "$REPO" \
+            --merge-sha "$MERGE_SHA" \
             --head-sha "$HEAD_SHA" \
             --required-checks "$REQUIRED_CHECKS" \
             --max-attempts "$MAX_ATTEMPTS" \
