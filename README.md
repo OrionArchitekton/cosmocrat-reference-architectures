@@ -1,6 +1,7 @@
 # Cosmocrat Reference Architectures
 
-Docs-only reference surface that explains Cosmocrat's product boundary, deployment composition, and governed proof line for readers and reviewers.
+Docs-only reference surface that explains Cosmocrat's product boundary,
+deployment composition, and governed proof line for readers and reviewers.
 
 Agent and reviewer navigation guide: [AGENTS.md](AGENTS.md)
 
