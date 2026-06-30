@@ -50,6 +50,8 @@ runtime migration, or Stage F business-stack work.
 
 - estate canon from `orion-estate-audit`
 - kernel and SDK repos as named authoritative implementation homes
+- `orion-infra` as the current operational/package source for reference
+  deployment composition reading paths
 - local explanatory docs under `docs/`
 - linked frozen Stage C inputs only where admitted by canon
 
@@ -87,8 +89,10 @@ docs-integrity checks.
 - `AGENTS.md`
 - `README.md`
 - `docs/topology-boundary.md`
+- `docs/reference-deployment-composition.md`
 - `docs/linked-supporting-inputs.md`
 - `docs/integration-composition.md`
+- `docs/proof-line.md`
 - `repos/repo_contract_registry_20260317.csv` in
   `OrionArchitekton/orion-estate-audit`
 - `COSMOCRAT_PRODUCT_FAMILY_REPO_CONTRACT_20260317.md` in
