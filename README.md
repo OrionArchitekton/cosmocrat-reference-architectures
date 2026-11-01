@@ -1,5 +1,9 @@
 # Cosmocrat Reference Architectures
 
+> Legacy. This repo is from the earlier Cosmocrat governance platform and is
+> not part of the current Cosmocrat OS release. Current tools:
+> <https://www.cosmocrat.ai/tools>
+
 Docs-only reference surface that explains Cosmocrat's product boundary,
 deployment composition, and governed proof line for readers and reviewers.
 
