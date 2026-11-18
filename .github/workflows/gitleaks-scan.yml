@@ -28,4 +28,10 @@ jobs:
           SCAN_PR_HEAD: ${{ github.event.pull_request.head.sha }}
           SCAN_PUSH_BEFORE: ${{ github.event.before }}
           SCAN_PUSH_AFTER: ${{ github.event.after }}
-        run: python3 -I .github/scripts/gitleaks_scan.py
+        run: |
+          set -euo pipefail
+          if ! printf '%s  %s\n' '1b6e60d6f45ecb76bdc171a2633114e82f17af200a41e6d16797baf3d3d5e5c7' '.github/scripts/gitleaks_scan.py' | sha256sum --check --status; then
+            echo 'RESULT: FAIL scanner-integrity: pinned scanner digest not verified' >&2
+            exit 1
+          fi
+          python3 -I .github/scripts/gitleaks_scan.py

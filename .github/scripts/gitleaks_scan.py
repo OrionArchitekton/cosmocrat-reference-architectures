@@ -8,6 +8,7 @@ base..head), merge commits included, each merge with its own patch against its f
 no first-parent walk and no commit limit. Push: before..after the same way.
 """
 
+import contextlib
 import dataclasses
 import hashlib
 import io
@@ -75,9 +76,9 @@ def read_event(environ):
 
 def scan_range(event):
     """The git revision range the scan covers: every commit reachable from the head and not
-    from the base (two dots), or the pushed commit alone when the push created the branch."""
+    from the base (two dots), or all reachable history when the push created the branch."""
     if event.base is None:
-        return f"{event.head}^!"
+        return event.head
     return f"{event.base}..{event.head}"
 
 
@@ -178,7 +179,9 @@ def expected_commits(stream):
             found.add(commit)
         state.update(open=False, header=False, skip=False)
 
-    for line in stream.split("\n"):
+    lines = stream.split("\n") if isinstance(stream, str) else stream
+    for line in lines:
+        line = line.rstrip("\n")
         if line.startswith("commit "):
             close_file()
             commit = line[len("commit "):].split(" ", 1)[0]
@@ -228,10 +231,20 @@ def judge(returncode, log, expected, in_range):
 
 
 def patch_stream(source, event):
-    """The patch stream gitleaks reads for this event, as text (undecodable bytes kept)."""
-    out = subprocess.run(gitleaks_log_command(source, log_options(event)), check=True,
-                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    return out.stdout.decode("utf-8", "surrogateescape")
+    """Yield Git's patch lines without retaining the range; reject its final exit status.
+
+    A temporary stderr file prevents pipe backpressure while stdout is consumed. Its
+    content is never echoed, and both the file and the owned Git process are reaped when
+    this generator is closed, including when accounting refuses a stream early.
+    """
+    command = gitleaks_log_command(source, log_options(event))
+    with tempfile.TemporaryFile() as errors:
+        with subprocess.Popen(command, stdout=subprocess.PIPE, stderr=errors) as out:
+            for line in out.stdout:
+                yield line.decode("utf-8", "surrogateescape")
+            returncode = out.wait()
+            if returncode != 0:
+                raise subprocess.CalledProcessError(returncode, command)
 
 
 def _say(line):
@@ -283,11 +296,11 @@ def run_scan(environ, source, archive_sha256):
     in_range = count_range(source, event)
     _say(f"commits in range (git rev-list --count): {in_range}")
     try:
-        stream = patch_stream(source, event)
+        with contextlib.closing(patch_stream(source, event)) as stream:
+            expected = len(expected_commits(stream))
     except subprocess.CalledProcessError as error:
         raise ScanRefused("git-error",
                           f"git log -p -U0 {options} exited {error.returncode}") from None
-    expected = len(expected_commits(stream))
     _say(f"expected commits (file patches gitleaks counts): {expected}")
     data = fetch_archive(environ)
     with tempfile.TemporaryDirectory(prefix="gitleaks-") as dest:
